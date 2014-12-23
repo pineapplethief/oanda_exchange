@@ -40,8 +40,7 @@ class Oanda
     end
     if instrument.nil?
       raise ArgumentError, 'failed to find OANDA instrument to fetch price'
-    end
-    log.debug "inverse = #{inverse}"
+    end    
     rate = price(instrument)[:bid].to_d
     rate = inverse ? 1.to_d/rate : rate
     result = options[:amount]*rate
@@ -65,6 +64,11 @@ class Oanda
     response = get '/prices', headers: headers, query: {instruments: instrument}
     log.debug "price = #{response[:prices]}"
     response[:prices].present? ? response[:prices].first : nil
+  end
+
+  def self.prices
+    response = get '/prices', headers: headers, query: {instruments: instruments.join(',')}
+    response[:prices].present? ? response[:prices] : nil
   end
 
   private
